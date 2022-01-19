@@ -1,0 +1,81 @@
+---
+title: "community_cluster"
+author: "Marie Rivers"
+date: "1/19/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Clustering
+## K-means Clustering
+### Load and plot the `iris` dataset
+```{r}
+# load R packages
+librarian::shelf(
+  dplyr, DT, ggplot2, tibble)
+
+# set seed for reproducible results
+set.seed(42)
+
+# load the dataset
+data("iris")
+
+# look at documentation in RStudio
+if (interactive())
+  help(iris)
+
+# show data table
+datatable(iris)
+```
+```{r}
+# plot petal length vs. width, species naive
+ggplot(
+  iris, aes(Petal.Length, Petal.Width)) +
+  geom_point()
+```
+```{r}
+# plot petal length vs. width, color by species
+legend_pos <- theme(
+  legend.position = c(0.95, 0.05),
+  legend.justification = c("right", "bottom"),
+  legend.box.just = "right")
+
+ggplot(data = iris, aes(Petal.Length, Petal.Width, color = Species)) +
+  geom_point() +
+  legend_pos
+```
+### Cluster `iris` using `kmeans()`
+```{r}
+# cluster using kmeans
+k <- 3 # number of clusters
+iris_k <- kmeans(
+  iris %>% 
+    select(Petal.Length, Petal.Width),
+  centers = k)
+
+# show cluster results
+iris_k
+```
+```{r}
+# compare clusters with species (which were not used to cluster)
+table(iris_k$cluster, iris$Species)
+```
+
+**Question:** How many observations could be considered "misclassified" if expecting petal length and width to differentiate between species?
+xxx...
+```{r}
+# extract cluster assignment per observation
+Cluster = factor(iris_k$cluster)
+
+ggplot(iris, aes(Petal.Length, Petal.Width, color = Cluster)) +
+  geom_point() +
+  legend_pos
+```
+### Plot Voronoi diagram of clustered `iris`
+This form of clustering assigns points to the cluster based on nearest centroid. You can see breaks more clearly with a Voronoi diagram.
+```{r}
+
+```
+
