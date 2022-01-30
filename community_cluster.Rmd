@@ -11,61 +11,75 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 # Clustering
 ## K-means Clustering
-### Load and plot the `iris` dataset
+### Load and plot the `penguins` dataset
 ```{r}
 # load R packages
 librarian::shelf(
-  dplyr, DT, ggplot2, tibble, tidyverse)
+  palmerpenguins, dplyr, DT, ggplot2, tibble, tidyverse, skimr)
 
 # set seed for reproducible results
 set.seed(42)
 
 # load the dataset
-data("iris")
+data("penguins")
 
 # look at documentation in RStudio
 if (interactive())
-  help(iris)
+  help(penguins)
 
 # show data table
-datatable(iris)
+datatable(penguins)
 ```
 
 ```{r}
-# plot petal length vs. width, species naive
+# skim the table for a summary
+skim(penguins)
+```
+
+```{r}
+# remove the rows with NAs
+penguins <- na.omit(penguins)
+```
+
+```{r}
+# plot bill length vs. bill depth, species naive
 ggplot(
-  iris, aes(Petal.Length, Petal.Width)) +
+  penguins, aes(bill_length_mm, bill_depth_mm)) +
   geom_point()
 ```
+
 ```{r}
-# plot petal length vs. width, color by species
+# plot bill length vs. bill depth, color by species
 legend_pos <- theme(
   legend.position = c(0.95, 0.05),
   legend.justification = c("right", "bottom"),
   legend.box.just = "right")
 
-ggplot(data = iris, aes(Petal.Length, Petal.Width, color = Species)) +
+ggplot(data = penguins, aes(bill_length_mm, bill_depth_mm, color = species)) +
   geom_point() +
   legend_pos
 ```
-### Cluster `iris` using `kmeans()`
+### Cluster `penguins` using `kmeans()`
 ```{r}
 # cluster using kmeans
 k <- 3 # number of clusters
-iris_k <- kmeans(
-  iris %>% 
-    select(Petal.Length, Petal.Width),
+penguins_k <- kmeans(
+  penguins %>% 
+    select(bill_length_mm, bill_depth_mm),
   centers = k)
 
 # show cluster results
-iris_k
-```
-```{r}
-# compare clusters with species (which were not used to cluster)
-table(iris_k$cluster, iris$Species)
+penguins_k
 ```
 
-**Question:** How many observations could be considered "misclassified" if expecting petal length and width to differentiate between species?
+```{r}
+# compare clusters with species (which were not used to cluster)
+table(penguins_k$cluster, penguins$species)
+```
+
+**Question:** How many observations could be considered "misclassified" if expecting bill length and bill depth to differentiate between species?
+
+In this evaluation, the Chinstrap penguins are group 1, the Adelie penguins are group 2, and the Gentoo penguins are group 3. The model performs best at identifying the Adelies. If bill length and bill depth are used to differentiate between species, then a total of 84 observations (45 Gentoo misidentified as Chinstrap, 1 Chinstrap misidentified as Adelie, 11 Adelie misidentified as Gentoo, and 27 Chinstap misidentified as Gentoo) would be misclassified. A total of 249 penguins were correctly identified (40 Chinstap, 135 Adelie, and 74 Gentoo).
 xxx...
 ```{r}
 # extract cluster assignment per observation
