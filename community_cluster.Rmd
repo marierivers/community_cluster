@@ -77,18 +77,6 @@ penguins_k
 table(penguins_k$cluster, penguins$species)
 ```
 
-**Question:** Comparing the observed species plot with 3 species with the kmeans() cluster plot with 3 clusters, where does this “unsupervised” kmeans() technique (that does not use species to “fit” the model) produce similar versus different results? One or two sentences would suffice. Feel free to mention ranges of values along the axes.
-
-
-The data set contains 151 Adelie observations, but the only 140 observations were classified as Adelie so at least 11 Adelie observations were misclassified.
-
-The data set contain 68 Chinstrap observations
-
-The data set contains 123 Gentoo observations
-
-xxx...
-
-
 ```{r}
 # extract cluster assignment per observation
 Cluster = factor(penguins_k$cluster)
@@ -97,6 +85,11 @@ ggplot(penguins, aes(bill_length_mm, bill_depth_mm, color = Cluster)) +
   geom_point() +
   legend_pos
 ```
+
+**Question:** Comparing the observed species plot with 3 species with the kmeans() cluster plot with 3 clusters, where does this “unsupervised” kmeans() technique (that does not use species to “fit” the model) produce similar versus different results? One or two sentences would suffice. Feel free to mention ranges of values along the axes.
+
+The data set contains 151 Adelie observations, but the only 140 observations were classified as Adelie so at least 11 Adelie observations were misclassified. The species plot is most similar to the clusters for the Adelie penguins and different for the Chinstrap and Gentoo clusters. The species plot shows that Gentoo penguins typically have the smallest bill depth and a bill length that is similarly distributed to Chinstrap penguins, however, the cluster plot created one cluster with smaller bill length and a wide range of bill depth and another cluster that has larger bill lenghts and a wide range of bill depth. Chinstrap penguins typically have bill depth range that is similar to Adelie and a bill length range that is similar to Gentoo.
+
 ### Plot Voronoi diagram of clustered `penguins`
 This form of clustering assigns points to the cluster based on nearest centroid. You can see breaks more clearly with a Voronoi diagram.
 ```{r}
@@ -258,7 +251,9 @@ B_AC = 1 - ((2 * C_AC) / (S_A + S_C) )
 B_BC = 1 - ((2 * C_BC) / (S_B + S_C) )
 ```
 
-**Question:** In your own words, how does Bray Curtis differ from Euclidean distance? See sites_euclidean versus sites_bray from lab code, slides from Lecture 05. Clustering and reading Chapter 8 of Kindt and Coe (2005).
+**Question:** In your own words, how does Bray Curtis differ from Euclidean distance? See `sites_euclidean` versus `sites_bray` from lab code, slides from Lecture 05. Clustering and reading Chapter 8 of Kindt and Coe (2005).
+
+The Bray Curtis distance metric focuses on species counts, particularly the sum of the lowest counts of shared species between two sites compared to the total cound of all species. For Bray Curtis, a dissimilarity value of 1 means that two sites have no species in common and are therefore completly disimilar. A Bray Curtis values of 0 means that two sites are identical.
 
 xxx
 
