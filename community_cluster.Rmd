@@ -77,7 +77,8 @@ penguins_k
 table(penguins_k$cluster, penguins$species)
 ```
 
-**Question:** How many observations could be considered "misclassified" if expecting bill length and bill depth to differentiate between species?
+**Question:** Comparing the observed species plot with 3 species with the kmeans() cluster plot with 3 clusters, where does this “unsupervised” kmeans() technique (that does not use species to “fit” the model) produce similar versus different results? One or two sentences would suffice. Feel free to mention ranges of values along the axes.
+
 
 The data set contains 151 Adelie observations, but the only 140 observations were classified as Adelie so at least 11 Adelie observations were misclassified.
 
@@ -257,6 +258,10 @@ B_AC = 1 - ((2 * C_AC) / (S_A + S_C) )
 B_BC = 1 - ((2 * C_BC) / (S_B + S_C) )
 ```
 
+**Question:** In your own words, how does Bray Curtis differ from Euclidean distance? See sites_euclidean versus sites_bray from lab code, slides from Lecture 05. Clustering and reading Chapter 8 of Kindt and Coe (2005).
+
+xxx
+
 ### Agglomerative hierarchical clustering on `dune`
 ```{r}
 # Dissimilarity matrix
@@ -273,6 +278,9 @@ hc1 <- hclust(d, method = "complete")
 # Dendrogram plot of hc1
 plot(hc1, cex = 0.6, hang = -1)
 ```
+**Question:** Which function comes first, vegdist() or hclust(), and why? See HOMLR 21.3.1 Agglomerative hierarchical clustering.
+
+xxx
 
 ```{r}
 # Compute agglomerative clustering with agnes
@@ -314,6 +322,14 @@ hc3$ac
 plot(hc3, which.plots = 2)
 ```
 
+**Question:** In your own words how does hclust() differ from agnes()? See HOMLR 21.3.1 Agglomerative hierarchical clustering and help documentation (?hclust(), ?agnes()).
+
+xxx
+
+**Question:** Of the 4 methods, which is the “best” model in terms of Agglomerative Coefficient?
+
+xxx
+
 ### Divisive hierarchical clustering on `dune`
 ```{r}
 # compute divisive hierarchical clustering
@@ -322,6 +338,10 @@ hc4 <- diana(dune)
 # Divise coefficient; amount of clustering structure found
 hc4$dc
 ```
+
+**Question:** In your own words how does agnes() differ from diana()? See HOMLR 21.3.1 Agglomerative hierarchical clustering, slides from Lecture 05. Clustering and help documentation (?agnes(), ?diana()).
+
+xxx
 
 ### Determining optimal clusters
 ```{r}
@@ -377,6 +397,14 @@ fviz_dend(
   k_colors = "jco")
 ```
 
+**Question:** How do the optimal number of clusters compare between methods for those with a dashed line?
+
+xxx
+
+**Question:** In dendrogram plots, which is the biggest determinant of relatedness between observations: the distance between observations along the labeled axes or the height of their shared connection? See HOMLR 21.5 Working with dendrograms.
+
+xxx
+
 # 2b. Community - Cluster
 # Ordination
 ## Principal Component Analysis (PCA)
@@ -417,6 +445,14 @@ my_pca <- h2o.prcomp(
 my_pca
 ```
 
+**Question:** Why is the pca_method of “GramSVD” chosen over “GLRM”? See HOMLR 17.4 Performing PCA in R.
+
+xxx
+
+**Question:** How many inital principal components are chosen with respect to dimensions of the input data? See HOMLR 17.4 Performing PCA in R.
+
+xxx
+
 ```{r}
 my_pca@model$eigenvectors %>% 
   as.data.frame() %>% 
@@ -425,14 +461,21 @@ my_pca@model$eigenvectors %>%
   geom_point()
 ```
 
+**Question:** What category of grocery items contribute most to PC1? (These are related because they're bought most often together on a given grocery trip)
+
+xxx
+
 ```{r}
-# xxx, typo here???
 my_pca@model$eigenvectors %>% 
   as.data.frame() %>% 
   mutate(feature = row.names(.)) %>% 
   ggplot(aes(pc1, pc2, label = feature)) +
   geom_text()
 ```
+
+**Question:** What category of grocery items contribute the least to PC1 but positively towards PC2?
+
+xxx
 
 ### Eigenvalue criterion
 ```{r}
@@ -442,6 +485,7 @@ eigen <- my_pca@model$importance["Standard deviation", ] %>%
   .^2
 
 # sum of all eigenvalues equals number of variables
+sum(eigen)
 ```
 
 ```{r}
@@ -481,6 +525,17 @@ data.frame(
   geom_line() +
   geom_text(nudge_y = -.002)
 ```
+**Question:** How many principal components would you include to explain 90% of the total variance?
+
+xxx
+
+**Question:** How many principal components to include up to the elbow of the PVE, i.e. the “elbow” before plateau of dimensions explaining the least variance?
+
+xxx
+
+**Question:** What are a couple of disadvantages to using PCA? See HOMLR 17.6 Final thoughts.
+
+xxx
 
 ## Non-metric MultiDimensional Scaling (NMDS)
 ### Unconstrained Ordination on Species
@@ -495,23 +550,39 @@ data("varechem") # chemistry
 varespec %>% tibble()
 ```
 
+**Question:** What are the dimensions of the varespec data frame and what do rows versus columns represent?
+
+xxx
+
 ```{r}
 vare.dis <- vegdist(varespec)
 vare.mds0 <- monoMDS(vare.dis)
 stressplot(vare.mds0)
 ```
 
+**Question:** The “stress” in a stressplot represents the difference between the observed inpnut distance versus the fitted ordination distance. How much better is the non-metric (i.e., NMDS) fit versus a linear fit (as with PCA) in terms of \(R^2\)?
+
+xxx
+
 ```{r}
 ordiplot(vare.mds0, type = "t")
 ```
+**Question:** What two sites are most dissimilar based on species composition for the first component MDS1? And two more most dissimilar sites for the second component MDS2?
+
+xxx
 
 ```{r}
 vare.mds <- metaMDS(varespec, trace= FALSE)
 vare.mds
 ```
+
 ```{r}
 plot(vare.mds, type = "t")
 ```
+
+**Question:** What is the basic difference between metaMDS and monoMDS()? See 2.1 Non-metric Multidimensional scaling of vegantutor.pdf.
+
+xxx
 
 ### Overlay with Environment
 ```{r}
@@ -524,6 +595,10 @@ plot(vare.mds, display = "sites")
 plot(ef, p.max = 0.05)
 ```
 
+**Question:** What two soil chemistry elements have the strongest negative relationship with NMDS1 that is based on species composition?
+
+xxx
+
 ```{r}
 ef <- envfit(vare.mds ~ Al + Ca, data = varechem)
 plot(vare.mds, display = "sites")
@@ -533,9 +608,9 @@ tmp <- with(varechem, ordisurf(vare.mds, Al, add = TRUE))
 ordisurf(vare.mds ~ Ca, data = varechem, add = TRUE, col = "green4")
 ```
 
-```{r}
+**Question:** Which of the two NMDS axes differentiates Ca the most, i.e. has the highest value given by the contours at the end (and not middle) of the axis?
 
-```
+xxx
 
 ### Constrained Ordination on Species and Environment
 ```{r}
@@ -560,4 +635,10 @@ if (interactive()){
 }
 ```
 
+**Question:** What is the difference between “constrained” versus “unconstrained” ordination within ecological context?
 
+xxx
+
+**Question:** What sites are most differentiated by CCA1, i.e. furthest apart along its axis, based on species composition AND the environmnent? What is the strongest environmental vector for CCA1, i.e. longest environmental vector in the direction of the CCA1 axes?
+
+xxx
