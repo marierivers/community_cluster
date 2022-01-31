@@ -7,7 +7,6 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
 ```
 # Clustering
 ## K-means Clustering
@@ -35,10 +34,11 @@ datatable(penguins)
 # skim the table for a summary
 skim(penguins)
 ```
-
+Only removed rows with NA values for bill length or bill depth, which resulted in 342 observations rather than 333 observations.
 ```{r}
 # remove the rows with NAs
-penguins <- na.omit(penguins)
+penguins <- penguins %>% 
+  drop_na(bill_length_mm, bill_depth_mm)
 ```
 
 ```{r}
@@ -79,38 +79,47 @@ table(penguins_k$cluster, penguins$species)
 
 **Question:** How many observations could be considered "misclassified" if expecting bill length and bill depth to differentiate between species?
 
-In this evaluation, the Chinstrap penguins are group 1, the Adelie penguins are group 2, and the Gentoo penguins are group 3. The model performs best at identifying the Adelies. If bill length and bill depth are used to differentiate between species, then a total of 84 observations (45 Gentoo misidentified as Chinstrap, 1 Chinstrap misidentified as Adelie, 11 Adelie misidentified as Gentoo, and 27 Chinstap misidentified as Gentoo) would be misclassified. A total of 249 penguins were correctly identified (40 Chinstap, 135 Adelie, and 74 Gentoo).
+The data set contains 151 Adelie observations, but the only 140 observations were classified as Adelie so at least 11 Adelie observations were misclassified.
+
+The data set contain 68 Chinstrap observations
+
+The data set contains 123 Gentoo observations
+
 xxx...
+
+
 ```{r}
 # extract cluster assignment per observation
-Cluster = factor(iris_k$cluster)
+Cluster = factor(penguins_k$cluster)
 
-ggplot(iris, aes(Petal.Length, Petal.Width, color = Cluster)) +
+ggplot(penguins, aes(bill_length_mm, bill_depth_mm, color = Cluster)) +
   geom_point() +
   legend_pos
 ```
-### Plot Voronoi diagram of clustered `iris`
+### Plot Voronoi diagram of clustered `penguins`
 This form of clustering assigns points to the cluster based on nearest centroid. You can see breaks more clearly with a Voronoi diagram.
 ```{r}
 librarian::shelf(ggvoronoi, scales)
 
 # define bounding box for geom_voronoi()
+xr <- extendrange(range(penguins$bill_length_mm), f = 0.1)
+yr <- extendrange(range(penguins$bill_depth_mm), f = 0.1)
 box <- tribble(
-  ~Petal.Length, ~Petal.Width, ~group,
-  1, 0.1, 1,
-  1, 2.5, 1, 
-  7, 2.5, 1, 
-  7, 0.1, 1, 
-  1, 0.1, 1) %>% 
+  ~bill_length_mm, ~bill_depth_mm, ~group,
+  xr[1], yr[1], 1,
+  xr[1], yr[2], 1,
+  xr[2], yr[2], 1,
+  xr[2], yr[1], 1,
+  xr[1], yr[1], 1) %>% 
   data.frame()
 ```
 
 ```{r}
 # cluster using kmeans
 k <- 3 # number of clusters
-iris_k <- kmeans(
-  iris %>% 
-    select(Petal.Length, Petal.Width),
+penguins_k <- kmeans(
+  penguins %>% 
+    select(bill_length_mm, bill_depth_mm),
   centers = k)
 ```
 
@@ -119,26 +128,78 @@ iris_k <- kmeans(
 Cluster = factor(penguins_k$cluster)
 
 # extract cluster centers
-ctrs <- as.data.frame(iris_k$centers) %>% 
+ctrs <- as.data.frame(penguins_k$centers) %>% 
   mutate(Cluster = factor(1:k))
 ```
 
 ```{r}
 # plot points with voronoi diagram showing nearest centroid
-ggplot(data = iris, aes(x = Petal.Length, y = Petal.Width, color = Cluster)) +
+ggplot(data = penguins, aes(x = bill_length_mm, y = bill_depth_mm, color = Cluster)) +
   geom_point() +
   legend_pos +
   geom_voronoi(data = ctrs, aes(fill = Cluster), color = NA, alpha = 0.5, outline = box) +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
   geom_point(data = ctrs, pch = 23, cex = 2, fill = "black")
-
 ```
 
 Task: Show the Voronoi diagram for fewer (k=2) and more (k=8) clusters to see how assignment to cluster centroids work.
-xxx
+
+**k = 2**
+```{r}
+# cluster using kmeans
+k <- 2 # number of clusters
+penguins_k2 <- kmeans(
+  penguins %>% 
+    select(bill_length_mm, bill_depth_mm),
+  centers = k)
+
+# extract cluster assignment per observation
+Cluster_k2 = factor(penguins_k2$cluster)
+
+# extract cluster centers
+ctrs_k2 <- as.data.frame(penguins_k2$centers) %>% 
+  mutate(Cluster_k2 = factor(1:k))
+
+# plot points with voronoi diagram showing nearest centroid
+ggplot(data = penguins, aes(x = bill_length_mm, y = bill_depth_mm, color = Cluster_k2)) +
+  geom_point() +
+  legend_pos +
+  geom_voronoi(data = ctrs_k2, aes(fill = Cluster_k2), color = NA, alpha = 0.5, outline = box) +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  geom_point(data = ctrs_k2, pch = 23, cex = 2, fill = "black")
+```
+**k = 8**
+```{r}
+# cluster using kmeans
+k <- 8 # number of clusters
+penguins_k8 <- kmeans(
+  penguins %>% 
+    select(bill_length_mm, bill_depth_mm),
+  centers = k)
+
+# extract cluster assignment per observation
+Cluster_k8 = factor(penguins_k8$cluster)
+
+# extract cluster centers
+ctrs_k8 <- as.data.frame(penguins_k8$centers) %>% 
+  mutate(Cluster_k8 = factor(1:k))
+
+# plot points with voronoi diagram showing nearest centroid
+ggplot(data = penguins, aes(x = bill_length_mm, y = bill_depth_mm, color = Cluster_k8)) +
+  geom_point() +
+  legend_pos +
+  geom_voronoi(data = ctrs_k8, aes(fill = Cluster_k8), color = NA, alpha = 0.5, outline = box) +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  geom_point(data = ctrs_k8, pch = 23, cex = 2, fill = "black")
+```
 ## Hierarchical Clustering
 Next, cluster sites according to species composition. Use the dune dataset from the vegan R package.
 
 ### Load `dune` dataset
+The dune data set includes meadow vegetation observations of 30 species from 20 sites. 
 ```{r}
 librarian::shelf(cluster, vegan)
 
@@ -151,7 +212,8 @@ if (interactive())
 ```
 
 **Question:** What are the rows and columns composed of in the dune data frame?
-xxx
+
+The rows correspond to each of the 20 sites. The columns correspond to 30 different species of meadow vegetation. The numbers in each cell are the number each species observed for each site.
 
 ### Calculate Ecological Distances on `sites`
 ```{r}
@@ -180,7 +242,20 @@ sites_bray
 ```
 
 ### Bray-Curtis Dissimilarity on `sites`
-xxx...do we calcusate these values in R?
+
+```{r}
+C_AB = 1 + 1
+C_AC = 0
+C_BC = 0
+
+S_A = 1 + 1 + 0
+S_B = 5 + 5 + 0
+S_C = 0 + 0 + 1
+
+B_AB = 1 - ((2 * C_AB) / (S_A + S_B) )
+B_AC = 1 - ((2 * C_AC) / (S_A + S_C) )
+B_BC = 1 - ((2 * C_BC) / (S_B + S_C) )
+```
 
 ### Agglomerative hierarchical clustering on `dune`
 ```{r}
@@ -266,11 +341,9 @@ p3 <- fviz_nbclust(dune, FUN = hcut, method = "gap_stat", k.max = 10) +
 
 # display plots side by side
 gridExtra::grid.arrange(p1, p2, p3, nrow = 1)
-
 ```
 
 ### Working with dendrograms
-
 ```{r}
 # Construct dendrogram for the Ames housing example
 hc5 <- hclust(d, method = "ward.D2")
@@ -331,6 +404,7 @@ h2o.init(max_mem_size = "5g") # connect to H2O instance
 # convert data to h2o object
 my_basket.h2o <- as.h2o(my_basket)
 ```
+
 ```{r}
 # run PCA
 my_pca <- h2o.prcomp(
