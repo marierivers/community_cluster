@@ -116,7 +116,7 @@ iris_k <- kmeans(
 
 ```{r}
 # extract cluster assignment per observation
-Cluster = factor(iris_k$cluster)
+Cluster = factor(penguins_k$cluster)
 
 # extract cluster centers
 ctrs <- as.data.frame(iris_k$centers) %>% 
