@@ -617,7 +617,7 @@ plot(ef, p.max = 0.05)
 
 **Question:** What two soil chemistry elements have the strongest negative relationship with NMDS1 that is based on species composition?
 
-xxx
+Al and Fe have the strongest negative relationship with NMDS1.
 
 ```{r}
 ef <- envfit(vare.mds ~ Al + Ca, data = varechem)
@@ -630,7 +630,7 @@ ordisurf(vare.mds ~ Ca, data = varechem, add = TRUE, col = "green4")
 
 **Question:** Which of the two NMDS axes differentiates Ca the most, i.e. has the highest value given by the contours at the end (and not middle) of the axis?
 
-xxx
+NMDS1 differentiates Ca the most.
 
 ### Constrained Ordination on Species and Environment
 ```{r}
@@ -657,8 +657,8 @@ if (interactive()){
 
 **Question:** What is the difference between “constrained” versus “unconstrained” ordination within ecological context?
 
-xxx
+In unconstrained ordination, you first find the major compositional variation and then relate this variation to observed environmental variation. In constrained ordination you do not want to display all or even most of the compositional variation, but only the variation that can be explained by the use of environmental variables or constraints.
 
 **Question:** What sites are most differentiated by CCA1, i.e. furthest apart along its axis, based on species composition AND the environmnent? What is the strongest environmental vector for CCA1, i.e. longest environmental vector in the direction of the CCA1 axes?
 
-xxx
+Sites 28 and 4 are most differentiated by CCA1. The strongest environmental vector for CCA1 is Al.
