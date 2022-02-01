@@ -454,11 +454,7 @@ my_pca
 
 **Question:** Why is the pca_method of “GramSVD” chosen over “GLRM”? See HOMLR 17.4 Performing PCA in R.
 
-xxx
-
-**Question:** How many inital principal components are chosen with respect to dimensions of the input data? See HOMLR 17.4 Performing PCA in R.
-
-xxx
+This anysis chose to use GramSVD because this method is best to use when the data contains mostly numeric data, as it this case with the `my_basket` data. The GLRM method is recommended to use your data contains categorical variables or just a few categorical variables with high cardinality.
 
 ```{r}
 my_pca@model$eigenvectors %>% 
@@ -468,9 +464,17 @@ my_pca@model$eigenvectors %>%
   geom_point()
 ```
 
+**Question:** How many initial principal components are chosen with respect to dimensions of the input data? See HOMLR 17.4 Performing PCA in R.
+```{r}
+init_pca_component <- ncol(my_basket.h2o)
+init_pca_component
+```
+
+There are 42 initial principal components.
+
 **Question:** What category of grocery items contribute most to PC1? (These are related because they're bought most often together on a given grocery trip)
 
-xxx
+The category 'adult beverages' contributes most to PC1. 
 
 ```{r}
 my_pca@model$eigenvectors %>% 
@@ -482,7 +486,7 @@ my_pca@model$eigenvectors %>%
 
 **Question:** What category of grocery items contribute the least to PC1 but positively towards PC2?
 
-xxx
+The category 'vegetables' contributes the lest to PC1 but contributes positively towards PC2.
 
 ### Eigenvalue criterion
 ```{r}
@@ -522,6 +526,13 @@ ve %>%
 min(which(ve$CVE >= 0.75))
 ```
 
+**Question:** How many principal components would you include to explain 90% of the total variance?
+```{r}
+# How many PCs required to explain at least 90% of total variable
+min(which(ve$CVE >= 0.9))
+```
+You would include 36 principal components to explain 90% of the total variance.
+
 ```{r}
 # Screee plot criterion
 data.frame(
@@ -532,17 +543,14 @@ data.frame(
   geom_line() +
   geom_text(nudge_y = -.002)
 ```
-**Question:** How many principal components would you include to explain 90% of the total variance?
-
-xxx
 
 **Question:** How many principal components to include up to the elbow of the PVE, i.e. the “elbow” before plateau of dimensions explaining the least variance?
 
-xxx
+Based on the elbow of the PVE, you would include 8 principal components before the dimensions explanantion of the least variance plateaus.
 
 **Question:** What are a couple of disadvantages to using PCA? See HOMLR 17.6 Final thoughts.
 
-xxx
+There is no one best answer for determining how many components to use with PCA and interpretation of the results is subjective. An additional disadvantage is that PCA can be highly affected by outliers. Also, PCA does not perform as well in very high dimensional space where complex nonlinear patterns often exits. 
 
 ## Non-metric MultiDimensional Scaling (NMDS)
 ### Unconstrained Ordination on Species
@@ -558,8 +566,12 @@ varespec %>% tibble()
 ```
 
 **Question:** What are the dimensions of the varespec data frame and what do rows versus columns represent?
+```{r}
+varespec_col <- ncol(varespec)
+varespec_row <- nrow(varespec)
+```
 
-xxx
+The `varespec` data frame has `r varespec_row` rows and `r varespec_col` columns. The rows represent each site and the columns represent estimated cover values for 44 species.
 
 ```{r}
 vare.dis <- vegdist(varespec)
@@ -567,8 +579,9 @@ vare.mds0 <- monoMDS(vare.dis)
 stressplot(vare.mds0)
 ```
 
-**Question:** The “stress” in a stressplot represents the difference between the observed inpnut distance versus the fitted ordination distance. How much better is the non-metric (i.e., NMDS) fit versus a linear fit (as with PCA) in terms of \(R^2\)?
+**Question:** The “stress” in a stressplot represents the difference between the observed input distance versus the fitted ordination distance. How much better is the non-metric (i.e., NMDS) fit versus a linear fit (as with PCA) in terms of \(R^2\)?
 
+The non-metric fit has an \(R^2\) value of 0.971 and the linear fit as an \(R^2\) of 0.84. Based on these values, the non-metric fit is about 15% better than the linear fit.
 xxx
 
 ```{r}
@@ -576,7 +589,7 @@ ordiplot(vare.mds0, type = "t")
 ```
 **Question:** What two sites are most dissimilar based on species composition for the first component MDS1? And two more most dissimilar sites for the second component MDS2?
 
-xxx
+Based on species composition for the first component MDS1, sites 28 and 5 are most dissimilar. Based on species composition for the second component MDS2, sites 21 and 14 are most dissimilar.
 
 ```{r}
 vare.mds <- metaMDS(varespec, trace= FALSE)
@@ -589,7 +602,7 @@ plot(vare.mds, type = "t")
 
 **Question:** What is the basic difference between metaMDS and monoMDS()? See 2.1 Non-metric Multidimensional scaling of vegantutor.pdf.
 
-xxx
+The function `metaMDS` performs Nonmetric Multidimensional Scaling (NMDS) and tries to find a stable solution using several random starts. `metaMDS` also standardizes the scaling in the result so that the configurations are easier to interpret and adds species scores to the site ordination. The `metaMDS` function does not provide actual NMDS, but it calls another function (`monoMDS` by default) for this purpose.
 
 ### Overlay with Environment
 ```{r}
