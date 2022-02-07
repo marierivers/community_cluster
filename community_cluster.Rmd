@@ -432,7 +432,7 @@ dim(my_basket)
 ### Performing PCA in R
 ```{r}
 h2o.no_progress() # turn off progress bars for brevity
-h2o.init(max_mem_size = "5g") # connect to H2O instance
+#h2o.init(max_mem_size = "5g") # connect to H2O instance
 ```
 
 ```{r}
@@ -582,7 +582,6 @@ stressplot(vare.mds0)
 **Question:** The “stress” in a stressplot represents the difference between the observed input distance versus the fitted ordination distance. How much better is the non-metric (i.e., NMDS) fit versus a linear fit (as with PCA) in terms of \(R^2\)?
 
 The non-metric fit has an \(R^2\) value of 0.971 and the linear fit as an \(R^2\) of 0.84. Based on these values, the non-metric fit is about 15% better than the linear fit.
-xxx
 
 ```{r}
 ordiplot(vare.mds0, type = "t")
