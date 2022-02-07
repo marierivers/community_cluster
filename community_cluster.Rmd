@@ -431,8 +431,8 @@ dim(my_basket)
 
 ### Performing PCA in R
 ```{r}
-h2o.no_progress() # turn off progress bars for brevity
-#h2o.init(max_mem_size = "5g") # connect to H2O instance
+h2o.no_progress() # turn off   progress bars for brevity
+h2o.init(max_mem_size = "5g") # connect to H2O instance
 ```
 
 ```{r}
